@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "author": "Ameer Hamza <ameerhamzanoor@outlook.com>",
   "dependencies": {
     "@supabase/supabase-js": "^2.46.1",
     "next": "15.0.3",
