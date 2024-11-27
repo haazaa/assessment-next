@@ -21,6 +21,7 @@ const Home = ({ initialContent }) => {
   };
 
   useEffect(() => {
+    fetchContent();
     if (typeof window !== "undefined") {
       const subscription = supabase
         .channel("content-changes")
