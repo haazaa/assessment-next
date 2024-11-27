@@ -1,9 +1,12 @@
 import { supabase } from "../lib/supabaseClient";
 import Home from "./home";
 
-// Server Component fetching initial static content
 async function fetchInitialContent() {
-  const { data, error } = await supabase.from("content").select("*").single();
+  const { data, error } = await supabase
+    .from("content")
+    .select("*")
+    .limit(1)
+    .single();
   if (error) throw new Error("Failed to fetch initial content.");
   return data;
 }
@@ -13,6 +16,7 @@ export default async function Page() {
   try {
     initialContent = await fetchInitialContent();
   } catch (error) {
+    console.error("Error fetching initial content:", error);
     initialContent = null;
   }
 

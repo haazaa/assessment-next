@@ -12,9 +12,12 @@ const Home = ({ initialContent }) => {
       const { data, error } = await supabase
         .from("content")
         .select("*")
+        .limit(1)
         .single();
       if (error) throw error;
-      setContent(data);
+      if (JSON.stringify(data) !== JSON.stringify(content)) {
+        setContent(data);
+      }
     } catch (err) {
       console.log("🚀 ~ fetchContent ~ err:", err);
     }
@@ -34,7 +37,7 @@ const Home = ({ initialContent }) => {
 
       return () => supabase.removeChannel(subscription);
     }
-  }, []);
+  }, [content]);
 
   const renderError = () => (
     <p className="text-2xl text-red-500 font-semibold">{error}</p>
