@@ -38,31 +38,28 @@ export default function Home({ initialContent }) {
     return () => supabase.removeChannel(subscription);
   }, [content, initialContent]);
 
+  const Title = content?.title || "Title...";
+  const Description = content?.description || "Description content...";
+
   return (
     <div className="mx-[5%] sm:mx-[10%] my-[5%]">
       <Head>
-        <title>{content?.title || "Loading..."}</title>
-        <meta
-          name="description"
-          content={content?.description || "Loading content..."}
-        />
+        <title>{Title}</title>
+        <meta name="description" content={Description} />
         <meta name="keywords" content="React, Next.js, Supabase, SEO" />
-        <meta property="og:title" content={content?.title || "Loading..."} />
-        <meta
-          property="og:description"
-          content={content?.description || "Loading content..."}
-        />
+        <meta property="og:title" content={Title} />
+        <meta property="og:description" content={Description} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.yourwebsite.com" />
+        <meta property="og:url" content="https://assessment-next.vercel.app/" />
         <meta name="robots" content="index, follow" />
       </Head>
       {content ? (
         <div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold capitalize font-serif mb-4">
-            {content?.title}
+            {Title}
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl font-light font-serif whitespace-pre-line">
-            {content?.description}
+            {Description}
           </p>
         </div>
       ) : (

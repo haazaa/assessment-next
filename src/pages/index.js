@@ -13,7 +13,7 @@ export async function getStaticProps() {
     props: {
       initialContent: error ? null : data,
     },
-    revalidate: 10, // Regenerate the page every 10 seconds
+    revalidate: 1,
   };
 }
 
