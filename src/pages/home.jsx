@@ -22,7 +22,7 @@ export default function Home({ initialContent }) {
   };
 
   useEffect(() => {
-    if (!content || content.title !== initialContent?.title) {
+    if (!content || content?.title !== initialContent?.title) {
       fetchContent();
     }
 
@@ -41,16 +41,16 @@ export default function Home({ initialContent }) {
   return (
     <div className="mx-[5%] sm:mx-[10%] my-[5%]">
       <Head>
-        <title>{content.title || "Loading..."}</title>
+        <title>{content?.title || "Loading..."}</title>
         <meta
           name="description"
-          content={content.description || "Loading content..."}
+          content={content?.description || "Loading content..."}
         />
         <meta name="keywords" content="React, Next.js, Supabase, SEO" />
-        <meta property="og:title" content={content.title || "Loading..."} />
+        <meta property="og:title" content={content?.title || "Loading..."} />
         <meta
           property="og:description"
-          content={content.description || "Loading content..."}
+          content={content?.description || "Loading content..."}
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.yourwebsite.com" />
@@ -59,10 +59,10 @@ export default function Home({ initialContent }) {
       {content ? (
         <div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold capitalize font-serif mb-4">
-            {content.title}
+            {content?.title}
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl font-light font-serif whitespace-pre-line">
-            {content.description}
+            {content?.description}
           </p>
         </div>
       ) : (
