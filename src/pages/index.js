@@ -13,9 +13,9 @@ export async function getStaticProps() {
     props: {
       initialContent: error ? null : data,
     },
-    revalidate: 1,
   };
 }
+export const revalidate = 0;
 
 export default function IndexPage({ initialContent }) {
   return <Home initialContent={initialContent} />;
