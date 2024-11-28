@@ -15,7 +15,7 @@ export async function getStaticProps() {
     },
   };
 }
-export const revalidate = 0;
+
 
 export default function IndexPage({ initialContent }) {
   return <Home initialContent={initialContent} />;
