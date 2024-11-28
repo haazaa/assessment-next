@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabaseClient";
 import Page from "./home";
 import "../app/globals.css";
-// Fetch data at build time
+
 export async function getStaticProps() {
   try {
     const { data, error } = await supabase
