@@ -1,11 +1,10 @@
+// /pages/index.js
 "use client";
-
+import { supabase } from "../lib/supabaseClient";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { supabase } from "../lib/supabaseClient";
 
-const Home = ({ initialContent }) => {
-  console.log("🚀 ~ Home ~ initialContent:", initialContent);
+export default function Home({ initialContent }) {
   const [content, setContent] = useState(initialContent);
 
   const fetchContent = async () => {
@@ -43,7 +42,6 @@ const Home = ({ initialContent }) => {
       return () => supabase.removeChannel(subscription);
     }
   }, [initialContent, content]);
-
 
   const renderContent = () => (
     <div>
@@ -86,6 +84,4 @@ const Home = ({ initialContent }) => {
       )}
     </div>
   );
-};
-
-export default Home;
+}
