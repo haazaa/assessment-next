@@ -5,6 +5,7 @@ import Head from "next/head";
 import { supabase } from "../lib/supabaseClient";
 
 const Home = ({ initialContent }) => {
+  console.log("🚀 ~ Home ~ initialContent:", initialContent);
   const [content, setContent] = useState(initialContent);
 
   const fetchContent = async () => {
@@ -15,6 +16,7 @@ const Home = ({ initialContent }) => {
         .limit(1)
         .single();
       if (error) throw error;
+
       if (JSON.stringify(data) !== JSON.stringify(content)) {
         setContent(data);
       }
@@ -24,7 +26,10 @@ const Home = ({ initialContent }) => {
   };
 
   useEffect(() => {
-    fetchContent();
+    if (!content || content.updated_at !== initialContent?.updated_at) {
+      fetchContent();
+    }
+
     if (typeof window !== "undefined") {
       const subscription = supabase
         .channel("content-changes")
@@ -37,11 +42,8 @@ const Home = ({ initialContent }) => {
 
       return () => supabase.removeChannel(subscription);
     }
-  }, [content]);
+  }, [initialContent, content]);
 
-  const renderError = () => (
-    <p className="text-2xl text-red-500 font-semibold">{error}</p>
-  );
 
   const renderContent = () => (
     <div>
@@ -79,8 +81,6 @@ const Home = ({ initialContent }) => {
         <p className="text-4xl sm:text-5xl md:text-6xl font-bold capitalize font-serif mb-4">
           Loading...
         </p>
-      ) : !content ? (
-        renderError()
       ) : (
         renderContent()
       )}
