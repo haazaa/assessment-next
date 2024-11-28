@@ -7,9 +7,13 @@ async function fetchInitialContent() {
     .select("*")
     .limit(1)
     .single();
-  if (error) throw new Error("Failed to fetch initial content.");
+  if (error) {
+    console.error("Error fetching initial content:", error.message);
+    return null;
+  }
   return data;
 }
+export const revalidate = 0;
 
 export default async function Page() {
   let initialContent;
