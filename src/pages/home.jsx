@@ -7,6 +7,7 @@ import Head from "next/head";
 export default function Home({ initialContent }) {
   const [content, setContent] = useState(initialContent);
 
+  // Fetch content if not already available or if it's outdated
   const fetchContent = async () => {
     try {
       const { data, error } = await supabase
@@ -15,31 +16,40 @@ export default function Home({ initialContent }) {
         .limit(1)
         .single();
 
-      if (!error) setContent(data);
+      if (!error) setContent(data); // Set new content
     } catch (err) {
       console.error("Error fetching content:", err);
     }
   };
 
+  // Real-time updates via subscription
   useEffect(() => {
+    // Fetch content if initialContent doesn't match what's currently in state
     if (!content || content?.title !== initialContent?.title) {
       fetchContent();
     }
 
+    // Subscription to listen for updates on content
     const subscription = supabase
       .channel("content-changes")
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "content" },
-        fetchContent
+        async (payload) => {
+          // Update state when content is changed in the database
+          if (payload.new?.id === content?.id) {
+            setContent(payload.new);
+          }
+        }
       )
       .subscribe();
 
     return () => supabase.removeChannel(subscription);
   }, [content, initialContent]);
 
-  const Title = content?.title || "Title...";
-  const Description = content?.description || "Description content...";
+  // Set title and description
+  const Title = content?.title || "Loading...";
+  const Description = content?.description || "Loading content...";
 
   return (
     <div className="mx-[5%] sm:mx-[10%] my-[5%]">
