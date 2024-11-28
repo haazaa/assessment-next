@@ -24,9 +24,7 @@ export default function Home({ initialContent }) {
   };
 
   useEffect(() => {
-    if (!content || content?.updated_at !== initialContent?.updated_at) {
-      fetchContent();
-    }
+    fetchContent();
 
     if (typeof window !== "undefined") {
       const subscription = supabase
@@ -34,7 +32,11 @@ export default function Home({ initialContent }) {
         .on(
           "postgres_changes",
           { event: "UPDATE", schema: "public", table: "content" },
-          fetchContent
+          (payload) => {
+            if (payload.new?.id === content?.id) {
+              setContent(payload.new);
+            }
+          }
         )
         .subscribe();
 

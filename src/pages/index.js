@@ -16,7 +16,7 @@ export async function getStaticProps() {
         props: {
           initialContent: null,
         },
-        revalidate: 10, // Regenerate the page every 10 seconds
+        revalidate: 1,
       };
     }
 
@@ -24,7 +24,7 @@ export async function getStaticProps() {
       props: {
         initialContent: data,
       },
-      revalidate: 10, // Regenerate the page every 10 seconds
+      revalidate: 1,
     };
   } catch (err) {
     console.error("Unexpected error:", err);
@@ -32,7 +32,7 @@ export async function getStaticProps() {
       props: {
         initialContent: null,
       },
-      revalidate: 10,
+      revalidate: 1,
     };
   }
 }
