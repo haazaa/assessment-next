@@ -1,5 +1,4 @@
 "use client";
-
 import { supabase } from "../lib/supabaseClient";
 import { useEffect, useState } from "react";
 import Head from "next/head";
@@ -7,7 +6,6 @@ import Head from "next/head";
 export default function Home({ initialContent }) {
   const [content, setContent] = useState(initialContent);
 
-  // Fetch content if not already available or if it's outdated
   const fetchContent = async () => {
     try {
       const { data, error } = await supabase
@@ -15,66 +13,65 @@ export default function Home({ initialContent }) {
         .select("*")
         .limit(1)
         .single();
+      if (error) throw error;
 
-      if (!error) setContent(data); // Set new content
+      if (JSON.stringify(data) !== JSON.stringify(content)) {
+        setContent(data);
+      }
     } catch (err) {
-      console.error("Error fetching content:", err);
+      console.log("🚀 ~ fetchContent ~ err:", err);
     }
   };
 
-  // Real-time updates via subscription
   useEffect(() => {
-    // Fetch content if initialContent doesn't match what's currently in state
-    if (!content || content?.title !== initialContent?.title) {
+    if (!content || content.updated_at !== initialContent?.updated_at) {
       fetchContent();
     }
 
-    // Subscription to listen for updates on content
-    const subscription = supabase
-      .channel("content-changes")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "content" },
-        async (payload) => {
-          // Update state when content is changed in the database
-          if (payload.new?.id === content?.id) {
-            setContent(payload.new);
-          }
-        }
-      )
-      .subscribe();
+    if (typeof window !== "undefined") {
+      const subscription = supabase
+        .channel("content-changes")
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "content" },
+          fetchContent
+        )
+        .subscribe();
 
-    return () => supabase.removeChannel(subscription);
-  }, [content, initialContent]);
+      return () => supabase.removeChannel(subscription);
+    }
+  }, [initialContent, content]);
 
-  // Set title and description
-  const Title = content?.title || "Loading...";
-  const Description = content?.description || "Loading content...";
+  const renderContent = () => (
+    <div>
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold capitalize font-serif mb-4">
+        {content.title}
+      </h1>
+      <p className="text-xl sm:text-2xl md:text-3xl font-light font-serif whitespace-pre-line">
+        {content.description}
+      </p>
+    </div>
+  );
 
   return (
     <div className="mx-[5%] sm:mx-[10%] my-[5%]">
       <Head>
-        <title>{Title}</title>
-        <meta name="description" content={Description} />
+        <title>{content.title || "Loading..."}</title>
+        <meta
+          name="description"
+          content={content.description || "Loading content..."}
+        />
         <meta name="keywords" content="React, Next.js, Supabase, SEO" />
-        <meta property="og:title" content={Title} />
-        <meta property="og:description" content={Description} />
+        <meta property="og:title" content={content.title || "Loading..."} />
+        <meta
+          property="og:description"
+          content={content.description || "Loading content..."}
+        />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://assessment-next.vercel.app/" />
+        <meta property="og:url" content="https://www.yourwebsite.com" />
         <meta name="robots" content="index, follow" />
       </Head>
-      {content ? (
-        <div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold capitalize font-serif mb-4">
-            {Title}
-          </h1>
-          <p className="text-xl sm:text-2xl md:text-3xl font-light font-serif whitespace-pre-line">
-            {Description}
-          </p>
-        </div>
-      ) : (
-        <p className="text-4xl font-bold">Loading...</p>
-      )}
+      {content && renderContent()}
     </div>
   );
 }

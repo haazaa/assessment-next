@@ -1,23 +1,42 @@
 import { supabase } from "../lib/supabaseClient";
-import Home from "./home";
+import Page from "./home";
 import "../app/globals.css";
-
+// Fetch data at build time
 export async function getStaticProps() {
-  const { data, error } = await supabase
-    .from("content")
-    .select("*")
-    .limit(1)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("content")
+      .select("*")
+      .limit(1)
+      .single();
 
-  return {
-    props: {
-      initialContent: error ? null : data,
-    },
-    revalidate: 1,
-  };
+    if (error) {
+      console.error("Error fetching initial content:", error.message);
+      return {
+        props: {
+          initialContent: null,
+        },
+        revalidate: 10, // Regenerate the page every 10 seconds
+      };
+    }
+
+    return {
+      props: {
+        initialContent: data,
+      },
+      revalidate: 10, // Regenerate the page every 10 seconds
+    };
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    return {
+      props: {
+        initialContent: null,
+      },
+      revalidate: 10,
+    };
+  }
 }
 
-
 export default function IndexPage({ initialContent }) {
-  return <Home initialContent={initialContent} />;
+  return <Page initialContent={initialContent} />;
 }
